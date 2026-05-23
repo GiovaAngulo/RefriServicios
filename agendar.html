@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Agendar Cita – Refrigeraciones Wilber{% endblock %}
+
+{% block extra_css %}
+<style>
+    .agendar-card {
+        max-width: 580px;
+        margin: 0 auto;
+    }
+
+    .servicio-radio { display: none; }
+
+    .servicio-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--gray-200);
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.18s;
+        background: var(--white);
+        margin-bottom: 0.5rem;
+    }
+
+    .servicio-label:hover {
+        border-color: var(--blue);
+        background: var(--ice);
+    }
+
+    .servicio-radio:checked + .servicio-label {
+        border-color: var(--blue);
+        background: var(--ice);
+        color: var(--blue-dark);
+        font-weight: 600;
+    }
+
+    .servicio-radio:checked + .servicio-label::after {
+        content: '✔';
+        margin-left: auto;
+        color: var(--blue);
+        font-weight: 800;
+    }
+
+    .step-badge {
+        width: 28px; height: 28px;
+        background: var(--blue);
+        color: #fff;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-head);
+        font-weight: 800;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-calendar-plus me-2"></i>Agendar servicio</h1>
+        <p>Completa el formulario y te contactaremos para confirmar</p>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="agendar-card">
+
+        <form method="POST" action="{{ url_for('agendar') }}" novalidate>
+            <!-- Paso 1: Fecha y hora -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="step-badge">1</span>
+                        <h5 class="font-head fw-bold mb-0">Selecciona fecha y hora</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label">Fecha preferida</label>
+                            <input
+                                type="date"
+                                name="fecha"
+                                class="form-control"
+                                value="{{ fecha or '' }}"
+                                min="{{ '' }}"
+                                required
+                            >
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Hora preferida</label>
+                            <input
+                                type="time"
+                                name="hora"
+                                class="form-control"
+                                value="{{ hora or '' }}"
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 2: Tipo de servicio -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="step-badge">2</span>
+                        <h5 class="font-head fw-bold mb-0">Tipo de servicio</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% set iconos = {
+                        'Instalación de equipo nuevo':  '🔧',
+                        'Mantenimiento preventivo':     '🛠️',
+                        'Reparación de compresor':      '⚙️',
+                        'Reparación de evaporador':     '❄️',
+                        'Reparación de condensador':    '🌡️',
+                        'Recarga de gas refrigerante':  '💨',
+                        'Revisión eléctrica':           '⚡',
+                        'Diagnóstico general':          '🔍',
+                        'Otros':                        '📋',
+                    } %}
+
+                    {% for servicio in servicios %}
+                    <input type="radio" name="descripcion" id="srv_{{ loop.index }}"
+                           value="{{ servicio }}" class="servicio-radio" required>
+                    <label for="srv_{{ loop.index }}" class="servicio-label">
+                        {{ iconos.get(servicio, '🔧') }} {{ servicio }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Confirmar -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="step-badge">3</span>
+                        <h5 class="font-head fw-bold mb-0">Confirmar solicitud</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="p-3 mb-3 rounded" style="background:var(--ice); font-size:0.85rem; color:var(--gray-700);">
+                        <i class="bi bi-whatsapp text-success me-1"></i>
+                        Al agendar tu cita, <strong>Wilber recibirá una notificación de WhatsApp</strong>
+                        con todos los detalles de tu solicitud.
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary flex-fill">
+                            <i class="bi bi-arrow-left me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-wilber flex-fill">
+                            <i class="bi bi-send me-2"></i>Enviar solicitud
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Bloquear fechas pasadas
+    const fechaInput = document.querySelector('input[name="fecha"]');
+    if (fechaInput) {
+        const hoy = new Date().toISOString().split('T')[0];
+        fechaInput.setAttribute('min', hoy);
+    }
+</script>
+{% endblock %}

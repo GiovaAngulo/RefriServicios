@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }} – Refrigeraciones Wilber{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-wrapper {
+        min-height: calc(100vh - 130px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        background: linear-gradient(135deg, var(--frost) 0%, var(--ice) 100%);
+    }
+
+    .error-card {
+        text-align: center;
+        max-width: 480px;
+        background: var(--white);
+        border-radius: 20px;
+        padding: 3rem 2.5rem;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .error-code {
+        font-family: var(--font-head);
+        font-size: 6rem;
+        font-weight: 800;
+        line-height: 1;
+        background: linear-gradient(135deg, var(--blue) 0%, var(--arctic) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+
+    .error-icon { font-size: 3.5rem; margin-bottom: 1rem; display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-wrapper">
+    <div class="error-card">
+        <span class="error-icon">
+            {% if code == 404 %}🔍
+            {% elif code == 403 %}🔒
+            {% else %}⚠️
+            {% endif %}
+        </span>
+        <div class="error-code">{{ code }}</div>
+        <h2 class="font-head fw-bold mt-2 mb-2" style="font-size:1.4rem;">{{ titulo }}</h2>
+        <p class="text-muted mb-4" style="font-size:0.92rem;">{{ mensaje }}</p>
+
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{{ url_for('index') }}" class="btn btn-wilber">
+                <i class="bi bi-house me-2"></i>Ir al inicio
+            </a>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Volver
+            </a>
+        </div>
+
+        {% if session.get('rol') == 'admin' %}
+        <div class="mt-3">
+            <a href="{{ url_for('admin_panel') }}" class="text-blue small fw-semibold">
+                <i class="bi bi-grid-3x3-gap me-1"></i>Ir al panel admin
+            </a>
+        </div>
+        {% elif session.get('empresa_id') %}
+        <div class="mt-3">
+            <a href="{{ url_for('dashboard') }}" class="text-blue small fw-semibold">
+                <i class="bi bi-calendar2-check me-1"></i>Ir a mis citas
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

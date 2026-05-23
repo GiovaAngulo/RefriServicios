@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Refrigeraciones Wilber{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts: Syne + DM Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ── Variables ───────────────────────────────────────────────── */
+        :root {
+            --ice:       #e8f4fd;
+            --sky:       #c0dff5;
+            --blue:      #1a6fb5;
+            --blue-dark: #0d4a80;
+            --arctic:    #0a2a4a;
+            --steel:     #4a6fa5;
+            --frost:     #f0f7ff;
+            --white:     #ffffff;
+            --gray-100:  #f4f7fb;
+            --gray-200:  #e2eaf4;
+            --gray-500:  #7a90ad;
+            --gray-700:  #3d5166;
+            --success:   #17b26a;
+            --danger:    #e53935;
+            --warning:   #f59e0b;
+            --font-head: 'Syne', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --radius:    12px;
+            --shadow:    0 4px 24px rgba(10,42,74,0.10);
+            --shadow-lg: 0 12px 40px rgba(10,42,74,0.16);
+        }
+
+        /* ── Base ────────────────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--frost);
+            color: var(--arctic);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        h1, h2, h3, h4, h5, h6, .font-head {
+            font-family: var(--font-head);
+        }
+
+        /* ── Navbar ──────────────────────────────────────────────────── */
+        .navbar {
+            background: var(--arctic) !important;
+            border-bottom: 2px solid var(--blue);
+            padding: 0 1.5rem;
+            min-height: 64px;
+            box-shadow: 0 2px 20px rgba(10,42,74,0.25);
+        }
+
+        .navbar-brand {
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--white) !important;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .navbar-brand .brand-sub {
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 0.7rem;
+            color: var(--sky);
+            display: block;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .nav-link {
+            color: var(--sky) !important;
+            font-size: 0.88rem;
+            font-weight: 500;
+            padding: 0.5rem 0.9rem !important;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--white) !important;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .nav-link i { margin-right: 4px; }
+
+        .badge-rol {
+            font-size: 0.65rem;
+            font-family: var(--font-body);
+            font-weight: 600;
+            background: var(--blue);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
+
+        .badge-rol.admin { background: var(--warning); color: var(--arctic); }
+
+        /* ── Cards ───────────────────────────────────────────────────── */
+        .card {
+            border: none;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            background: var(--white);
+        }
+
+        .card-header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            border-radius: var(--radius) var(--radius) 0 0 !important;
+            padding: 1.1rem 1.5rem;
+        }
+
+        /* ── Stat cards ──────────────────────────────────────────────── */
+        .stat-card {
+            border-radius: var(--radius);
+            padding: 1.4rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            right: -20px; top: -20px;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.8rem;
+            opacity: 0.9;
+        }
+
+        .stat-card .stat-value {
+            font-family: var(--font-head);
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .stat-blue    { background: var(--blue); color: #fff; }
+        .stat-arctic  { background: var(--arctic); color: #fff; }
+        .stat-success { background: var(--success); color: #fff; }
+        .stat-danger  { background: var(--danger); color: #fff; }
+        .stat-warning { background: var(--warning); color: var(--arctic); }
+
+        /* ── Badges de estado ────────────────────────────────────────── */
+        .estado-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+
+        .estado-pendiente  { background: #fff3cd; color: #856404; }
+        .estado-aceptada   { background: #d1fae5; color: #065f46; }
+        .estado-cancelada  { background: #fee2e2; color: #991b1b; }
+
+        /* ── Botones ──────────────────────────────────────────────────── */
+        .btn-primary {
+            background: var(--blue);
+            border-color: var(--blue);
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+        .btn-primary:hover {
+            background: var(--blue-dark);
+            border-color: var(--blue-dark);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--blue);
+            color: var(--blue);
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--blue);
+        }
+
+        .btn-wilber {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-family: var(--font-head);
+            letter-spacing: 0.02em;
+            padding: 0.65rem 1.5rem;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(26,111,181,0.35);
+        }
+
+        .btn-wilber:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(26,111,181,0.45);
+            color: var(--white);
+        }
+
+        /* ── Forms ────────────────────────────────────────────────────── */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border-color: var(--gray-200);
+            background: var(--frost);
+            font-size: 0.92rem;
+            padding: 0.55rem 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(26,111,181,0.15);
+            background: var(--white);
+        }
+
+        .form-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--gray-700);
+            margin-bottom: 5px;
+        }
+
+        .input-group-text {
+            background: var(--gray-100);
+            border-color: var(--gray-200);
+            color: var(--steel);
+            border-radius: 8px 0 0 8px;
+        }
+
+        /* ── Tabla ────────────────────────────────────────────────────── */
+        .table {
+            font-size: 0.88rem;
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--gray-100);
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+            padding: 0.8rem 1rem;
+        }
+
+        .table tbody td {
+            padding: 0.9rem 1rem;
+            vertical-align: middle;
+            border-color: var(--gray-200);
+        }
+
+        .table-hover tbody tr:hover {
+            background: var(--frost);
+        }
+
+        /* ── Alerts ───────────────────────────────────────────────────── */
+        .alert {
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .alert-success { background: #d1fae5; color: #065f46; }
+        .alert-danger  { background: #fee2e2; color: #991b1b; }
+        .alert-warning { background: #fff3cd; color: #856404; }
+        .alert-info    { background: #dbeafe; color: #1e40af; }
+
+        /* ── Page header ─────────────────────────────────────────────── */
+        .page-header {
+            background: linear-gradient(135deg, var(--arctic) 0%, var(--blue-dark) 100%);
+            color: var(--white);
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .page-header p {
+            margin: 0.3rem 0 0;
+            color: var(--sky);
+            font-size: 0.9rem;
+        }
+
+        /* ── Footer ──────────────────────────────────────────────────── */
+        footer {
+            background: var(--arctic);
+            color: var(--gray-500);
+            text-align: center;
+            padding: 1.2rem;
+            font-size: 0.82rem;
+            margin-top: auto;
+        }
+
+        footer span { color: var(--sky); font-weight: 600; }
+
+        /* ── Empty state ─────────────────────────────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; }
+
+        /* ── Misc ────────────────────────────────────────────────────── */
+        .divider {
+            height: 1px;
+            background: var(--gray-200);
+            margin: 1.5rem 0;
+        }
+
+        .text-blue { color: var(--blue) !important; }
+        .bg-frost  { background: var(--frost) !important; }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column" style="min-height:100vh;">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <div class="brand-icon">❄️</div>
+                <div>
+                    Refrigeraciones Wilber
+                    <span class="brand-sub">Servicios de refrigeración</span>
+                </div>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+
+                    {% if session.get('empresa_id') %}
+                        {% if session.get('rol') == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin_panel') }}">
+                                    <i class="bi bi-grid-3x3-gap"></i> Panel Admin
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('dashboard') }}">
+                                    <i class="bi bi-calendar2-check"></i> Mis citas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('agendar') }}">
+                                    <i class="bi bi-plus-circle"></i> Agendar
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        <li class="nav-item d-flex align-items-center gap-2 ps-2">
+                            <span class="badge-rol {% if session.get('rol') == 'admin' %}admin{% endif %}">
+                                {{ session.get('rol') }}
+                            </span>
+                            <small class="text-secondary d-none d-lg-inline">
+                                {{ session.get('empresa_nombre') }}
+                            </small>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i class="bi bi-box-arrow-right"></i> Salir
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="bi bi-person-lock"></i> Iniciar sesión
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-wilber ms-2 py-2" href="{{ url_for('registro') }}" style="font-size:0.84rem;">
+                                <i class="bi bi-building-add"></i> Registrarse
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-triangle{% elif category == 'warning' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Content -->
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        ❄️ <span>Refrigeraciones Wilber</span> &nbsp;·&nbsp; Sistema de Gestión de Citas &nbsp;·&nbsp; {{ 2024 }}
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

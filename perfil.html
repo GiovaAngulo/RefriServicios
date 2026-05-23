@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Mi Perfil – Refrigeraciones Wilber{% endblock %}
+
+{% block extra_css %}
+<style>
+    .perfil-avatar {
+        width: 72px; height: 72px;
+        background: linear-gradient(135deg, var(--blue) 0%, var(--arctic) 100%);
+        color: #fff;
+        font-family: var(--font-head);
+        font-weight: 800;
+        font-size: 1.8rem;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 6px 20px rgba(26,111,181,0.35);
+    }
+
+    .info-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 0.9rem 0;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .info-row:last-child { border-bottom: none; }
+
+    .info-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--gray-500);
+        min-width: 120px;
+    }
+
+    .info-value {
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: var(--arctic);
+    }
+
+    .info-icon {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        background: var(--ice);
+        color: var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-person-circle me-2"></i>Mi Perfil</h1>
+        <p>Información de tu empresa y resumen de actividad</p>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row g-4">
+
+        <!-- Datos de la empresa -->
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="font-head fw-bold mb-0">
+                        <i class="bi bi-building me-2 text-blue"></i>Datos de la empresa
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Avatar -->
+                    <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded"
+                         style="background:var(--frost);">
+                        <div class="perfil-avatar">
+                            {{ empresa['nombre'][0] | upper }}
+                        </div>
+                        <div>
+                            <div class="font-head fw-bold" style="font-size:1.05rem;">
+                                {{ empresa['nombre'] }}
+                            </div>
+                            <span class="badge-rol" style="font-size:0.65rem;">usuario</span>
+                        </div>
+                    </div>
+
+                    <!-- Info rows -->
+                    <div class="info-row">
+                        <div class="info-icon">🏢</div>
+                        <div>
+                            <div class="info-label">Empresa</div>
+                            <div class="info-value">{{ empresa['nombre'] }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-icon">👤</div>
+                        <div>
+                            <div class="info-label">Contacto</div>
+                            <div class="info-value">{{ empresa['contacto'] }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-icon">✉️</div>
+                        <div>
+                            <div class="info-label">Correo</div>
+                            <div class="info-value">{{ empresa['email'] }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-icon">📅</div>
+                        <div>
+                            <div class="info-label">Registrado el</div>
+                            <div class="info-value">{{ empresa['fecha_registro'][:10] }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de citas -->
+        <div class="col-lg-7">
+            {% set total     = citas | length %}
+            {% set pendiente = citas | selectattr('estado','eq','pendiente') | list | length %}
+            {% set aceptada  = citas | selectattr('estado','eq','aceptada')  | list | length %}
+            {% set cancelada = citas | selectattr('estado','eq','cancelada') | list | length %}
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="font-head fw-bold mb-0">
+                        <i class="bi bi-bar-chart me-2 text-blue"></i>Resumen de actividad
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="stat-card stat-blue">
+                                <div class="stat-icon mb-1">📋</div>
+                                <div class="stat-value">{{ total }}</div>
+                                <div class="stat-label">Total citas</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card stat-warning">
+                                <div class="stat-icon mb-1">⏳</div>
+                                <div class="stat-value">{{ pendiente }}</div>
+                                <div class="stat-label">Pendientes</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card stat-success">
+                                <div class="stat-icon mb-1">✅</div>
+                                <div class="stat-value">{{ aceptada }}</div>
+                                <div class="stat-label">Aceptadas</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card stat-danger">
+                                <div class="stat-icon mb-1">❌</div>
+                                <div class="stat-value">{{ cancelada }}</div>
+                                <div class="stat-label">Canceladas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Barra de progreso de aceptación -->
+                    {% if total > 0 %}
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between mb-1" style="font-size:0.8rem; font-weight:600;">
+                            <span>Tasa de aceptación</span>
+                            <span class="text-blue">{{ ((aceptada / total) * 100) | round | int }}%</span>
+                        </div>
+                        <div class="progress" style="height:10px; border-radius:10px; background:var(--gray-200);">
+                            <div class="progress-bar" role="progressbar"
+                                 style="width:{{ ((aceptada / total) * 100) | round | int }}%; background:var(--success); border-radius:10px;">
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="font-head fw-bold mb-0">
+                        <i class="bi bi-lightning me-2 text-blue"></i>Acciones rápidas
+                    </h5>
+                </div>
+                <div class="card-body d-flex gap-3 flex-wrap">
+                    <a href="{{ url_for('agendar') }}" class="btn btn-wilber">
+                        <i class="bi bi-plus-circle me-2"></i>Nueva cita
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar2-check me-2"></i>Ver mis citas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

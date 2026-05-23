@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+{% block title %}Panel Administrador – Refrigeraciones Wilber{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-btn {
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 4px 14px;
+        border: 2px solid var(--gray-200);
+        background: var(--white);
+        color: var(--gray-700);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+        border-color: var(--blue);
+        background: var(--blue);
+        color: var(--white);
+    }
+
+    .filter-btn.f-pendiente.active  { background: #f59e0b; border-color: #f59e0b; color: var(--arctic); }
+    .filter-btn.f-aceptada.active   { background: #17b26a; border-color: #17b26a; }
+    .filter-btn.f-cancelada.active  { background: #e53935; border-color: #e53935; }
+
+    .empresa-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--ice);
+        color: var(--blue-dark);
+        border-radius: 6px;
+        padding: 2px 9px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .hidden { display: none !important; }
+
+    .select-estado {
+        font-size: 0.8rem;
+        padding: 3px 8px;
+        border-radius: 6px;
+        border: 1px solid var(--gray-200);
+    }
+
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+
+    .nav-tabs .nav-link {
+        font-family: var(--font-head);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--gray-700);
+        border-radius: 8px 8px 0 0;
+        padding: 0.6rem 1.2rem;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: var(--blue);
+        border-bottom-color: var(--white);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h1>
+                    <span class="badge-rol admin me-2" style="font-size:0.7rem; vertical-align:middle;">ADMIN</span>
+                    Panel de Administración
+                </h1>
+                <p>Gestiona todas las citas y empresas registradas</p>
+            </div>
+            <div class="text-end">
+                <div style="font-size:0.8rem; color:var(--sky);">
+                    <i class="bi bi-person-gear me-1"></i> Sesión: {{ session.get('empresa_nombre') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-sm-4 col-lg-2">
+            <div class="stat-card stat-arctic">
+                <div class="stat-icon mb-1">🏢</div>
+                <div class="stat-value">{{ stats.total_empresas }}</div>
+                <div class="stat-label">Empresas</div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-4 col-lg-2">
+            <div class="stat-card stat-blue">
+                <div class="stat-icon mb-1">📋</div>
+                <div class="stat-value">{{ stats.total_citas }}</div>
+                <div class="stat-label">Total citas</div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-4 col-lg-2">
+            <div class="stat-card stat-warning">
+                <div class="stat-icon mb-1">⏳</div>
+                <div class="stat-value">{{ stats.pendientes }}</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-4 col-lg-2">
+            <div class="stat-card stat-success">
+                <div class="stat-icon mb-1">✅</div>
+                <div class="stat-value">{{ stats.aceptadas }}</div>
+                <div class="stat-label">Aceptadas</div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-4 col-lg-2">
+            <div class="stat-card stat-danger">
+                <div class="stat-icon mb-1">❌</div>
+                <div class="stat-value">{{ stats.canceladas }}</div>
+                <div class="stat-label">Canceladas</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-0" id="adminTabs">
+        <li class="nav-item">
+            <button class="nav-link active" onclick="showTab('citas', this)">
+                <i class="bi bi-calendar3 me-1"></i>Todas las citas
+                <span class="badge bg-primary rounded-pill ms-1" style="font-size:0.7rem;">{{ citas | length }}</span>
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" onclick="showTab('empresas', this)">
+                <i class="bi bi-building me-1"></i>Empresas
+                <span class="badge bg-secondary rounded-pill ms-1" style="font-size:0.7rem;">{{ empresas | length }}</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab: Citas -->
+    <div id="tab-citas" class="tab-section active">
+        <div class="card" style="border-radius: 0 var(--radius) var(--radius) var(--radius);">
+            <div class="card-header">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h6 class="font-head fw-bold mb-0">Gestión de citas</h6>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <!-- Búsqueda en tiempo real -->
+                        <div class="input-group input-group-sm" style="width:220px;">
+                            <span class="input-group-text" style="border-radius:8px 0 0 8px;">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="busqueda" class="form-control"
+                                   placeholder="Buscar empresa o servicio…"
+                                   oninput="buscarCitas(this.value)"
+                                   style="border-radius:0 8px 8px 0;">
+                        </div>
+                        <!-- Filtros -->
+                        <div class="d-flex gap-1 flex-wrap" id="filtros">
+                            <button class="filter-btn active" onclick="filtrar('todas', this)">Todas</button>
+                            <button class="filter-btn f-pendiente" onclick="filtrar('pendiente', this)">⏳</button>
+                            <button class="filter-btn f-aceptada" onclick="filtrar('aceptada', this)">✅</button>
+                            <button class="filter-btn f-cancelada" onclick="filtrar('cancelada', this)">❌</button>
+                        </div>
+                        <!-- Exportar -->
+                        <a href="{{ url_for('exportar_citas') }}"
+                           class="btn btn-sm btn-outline-primary"
+                           title="Exportar a CSV">
+                            <i class="bi bi-download me-1"></i>CSV
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {% if citas %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="tablaCitas">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Empresa</th>
+                            <th>Contacto</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Servicio</th>
+                            <th>Estado</th>
+                            <th>Cambiar estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cita in citas %}
+                        <tr data-estado="{{ cita['estado'] }}">
+                            <td class="text-muted" style="font-size:0.8rem;">#{{ cita['id'] }}</td>
+                            <td>
+                                <span class="empresa-chip">
+                                    🏢 {{ cita['empresa_nombre'] }}
+                                </span>
+                            </td>
+                            <td>
+                                <div style="font-size:0.85rem;">{{ cita['contacto'] }}</div>
+                                <div style="font-size:0.75rem; color:var(--gray-500);">{{ cita['email'] }}</div>
+                            </td>
+                            <td><strong>{{ cita['fecha'] }}</strong></td>
+                            <td>{{ cita['hora'] }}</td>
+                            <td style="max-width:180px; font-size:0.85rem;">{{ cita['descripcion'] }}</td>
+                            <td>
+                                {% if cita['estado'] == 'pendiente' %}
+                                    <span class="estado-badge estado-pendiente">⏳ Pendiente</span>
+                                {% elif cita['estado'] == 'aceptada' %}
+                                    <span class="estado-badge estado-aceptada">✅ Aceptada</span>
+                                {% else %}
+                                    <span class="estado-badge estado-cancelada">❌ Cancelada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('cambiar_estado', cita_id=cita['id']) }}" class="d-flex gap-1">
+                                    <select name="estado" class="form-select select-estado">
+                                        <option value="pendiente"  {% if cita['estado']=='pendiente'  %}selected{% endif %}>⏳ Pendiente</option>
+                                        <option value="aceptada"   {% if cita['estado']=='aceptada'   %}selected{% endif %}>✅ Aceptada</option>
+                                        <option value="cancelada"  {% if cita['estado']=='cancelada'  %}selected{% endif %}>❌ Cancelada</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm" title="Actualizar">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-calendar-x text-blue"></i>
+                <h5 class="font-head fw-bold">No hay citas registradas</h5>
+                <p class="text-muted">Las citas de tus clientes aparecerán aquí.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tab: Empresas -->
+    <div id="tab-empresas" class="tab-section">
+        <div class="card" style="border-radius: 0 var(--radius) var(--radius) var(--radius);">
+            <div class="card-header">
+                <h6 class="font-head fw-bold mb-0">Empresas registradas</h6>
+            </div>
+            {% if empresas %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Empresa</th>
+                            <th>Contacto</th>
+                            <th>Email</th>
+                            <th>Fecha de registro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for empresa in empresas %}
+                        <tr>
+                            <td class="text-muted" style="font-size:0.8rem;">{{ empresa['id'] }}</td>
+                            <td>
+                                <span class="empresa-chip">🏢 {{ empresa['nombre'] }}</span>
+                            </td>
+                            <td>{{ empresa['contacto'] }}</td>
+                            <td style="font-size:0.85rem;">{{ empresa['email'] }}</td>
+                            <td style="font-size:0.8rem; color:var(--gray-500);">{{ empresa['fecha_registro'][:10] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-building text-blue"></i>
+                <h5 class="font-head fw-bold">No hay empresas registradas</h5>
+                <p class="text-muted">Las empresas que se registren aparecerán aquí.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let filtroActual = 'todas';
+
+    function showTab(name, btn) {
+        document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('#adminTabs .nav-link').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function filtrar(estado, btn) {
+        filtroActual = estado;
+        document.querySelectorAll('#filtros .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        aplicarFiltros();
+    }
+
+    function buscarCitas(texto) {
+        aplicarFiltros(texto.toLowerCase());
+    }
+
+    function aplicarFiltros(texto) {
+        if (texto === undefined) {
+            texto = (document.getElementById('busqueda')?.value || '').toLowerCase();
+        }
+        const filas = document.querySelectorAll('#tablaCitas tbody tr');
+        filas.forEach(fila => {
+            const coincideEstado = filtroActual === 'todas' || fila.dataset.estado === filtroActual;
+            const contenido = fila.textContent.toLowerCase();
+            const coincideTexto = !texto || contenido.includes(texto);
+            fila.classList.toggle('hidden', !(coincideEstado && coincideTexto));
+        });
+
+        // Mostrar mensaje si no hay resultados
+        const visibles = [...filas].filter(f => !f.classList.contains('hidden'));
+        let noResultados = document.getElementById('noResultados');
+        if (visibles.length === 0) {
+            if (!noResultados) {
+                noResultados = document.createElement('tr');
+                noResultados.id = 'noResultados';
+                noResultados.innerHTML = `<td colspan="8" class="text-center py-4 text-muted" style="font-size:0.9rem;">
+                    <i class="bi bi-search me-2"></i>No se encontraron citas con ese criterio.
+                </td>`;
+                document.querySelector('#tablaCitas tbody').appendChild(noResultados);
+            }
+        } else if (noResultados) {
+            noResultados.remove();
+        }
+    }
+</script>
+{% endblock %}

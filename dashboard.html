@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Mi Panel – Refrigeraciones Wilber{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h1><i class="bi bi-calendar2-check me-2"></i>Mis Citas</h1>
+                <p>{{ empresa['nombre'] }} &nbsp;·&nbsp; {{ empresa['contacto'] }}</p>
+            </div>
+            <a href="{{ url_for('agendar') }}" class="btn btn-wilber">
+                <i class="bi bi-plus-circle me-2"></i>Nueva cita
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <!-- Resumen rápido -->
+    {% set total     = citas | length %}
+    {% set pendiente = citas | selectattr('estado','eq','pendiente') | list | length %}
+    {% set aceptada  = citas | selectattr('estado','eq','aceptada') | list | length %}
+    {% set cancelada = citas | selectattr('estado','eq','cancelada') | list | length %}
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card stat-blue">
+                <div class="stat-icon mb-1">📋</div>
+                <div class="stat-value">{{ total }}</div>
+                <div class="stat-label">Total citas</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card stat-warning">
+                <div class="stat-icon mb-1">⏳</div>
+                <div class="stat-value">{{ pendiente }}</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card stat-success">
+                <div class="stat-icon mb-1">✅</div>
+                <div class="stat-value">{{ aceptada }}</div>
+                <div class="stat-label">Aceptadas</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card stat-danger">
+                <div class="stat-icon mb-1">❌</div>
+                <div class="stat-value">{{ cancelada }}</div>
+                <div class="stat-label">Canceladas</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de citas -->
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="font-head fw-bold mb-0">
+                <i class="bi bi-list-ul me-2 text-blue"></i>Historial de citas
+            </h5>
+            <span class="badge bg-primary rounded-pill">{{ total }}</span>
+        </div>
+
+        {% if citas %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Servicio</th>
+                        <th>Estado</th>
+                        <th>Agendada el</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cita in citas %}
+                    <tr>
+                        <td class="text-muted" style="font-size:0.8rem;">#{{ cita['id'] }}</td>
+                        <td>
+                            <i class="bi bi-calendar3 text-blue me-1"></i>
+                            <strong>{{ cita['fecha'] }}</strong>
+                        </td>
+                        <td>
+                            <i class="bi bi-clock text-blue me-1"></i>
+                            {{ cita['hora'] }}
+                        </td>
+                        <td>
+                            <span style="font-weight:500;">{{ cita['descripcion'] }}</span>
+                        </td>
+                        <td>
+                            {% if cita['estado'] == 'pendiente' %}
+                                <span class="estado-badge estado-pendiente">⏳ Pendiente</span>
+                            {% elif cita['estado'] == 'aceptada' %}
+                                <span class="estado-badge estado-aceptada">✅ Aceptada</span>
+                            {% else %}
+                                <span class="estado-badge estado-cancelada">❌ Cancelada</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted" style="font-size:0.8rem;">{{ cita['fecha_creacion'][:10] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-calendar-x text-blue"></i>
+            <h5 class="font-head fw-bold">No tienes citas aún</h5>
+            <p class="text-muted">Agenda tu primer servicio y aparecerá aquí.</p>
+            <a href="{{ url_for('agendar') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Agendar cita
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Aviso de estados -->
+    <div class="mt-3 p-3 rounded" style="background:var(--ice); font-size:0.82rem; color:var(--gray-700); border-left:3px solid var(--blue);">
+        <i class="bi bi-info-circle text-blue me-1"></i>
+        Una vez agendada tu cita, el equipo de <strong>Refrigeraciones Wilber</strong> revisará tu solicitud y actualizará el estado.
+        Recibirás confirmación a través del administrador.
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block title %}Refrigeraciones Wilber – Gestión de Servicios{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        background: linear-gradient(140deg, var(--arctic) 0%, #0b3660 55%, var(--blue) 100%);
+        color: var(--white);
+        padding: 5rem 0 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '❄';
+        position: absolute;
+        font-size: 24rem;
+        opacity: 0.04;
+        right: -4rem;
+        top: -4rem;
+        line-height: 1;
+        pointer-events: none;
+    }
+
+    .hero-title {
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+    }
+
+    .hero-sub {
+        font-size: 1.1rem;
+        color: var(--sky);
+        max-width: 520px;
+        line-height: 1.6;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 20px;
+        padding: 4px 14px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--sky);
+        margin-bottom: 1.2rem;
+    }
+
+    .feature-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        padding: 1.8rem;
+        box-shadow: var(--shadow);
+        height: 100%;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-top: 3px solid var(--blue);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .feature-icon {
+        width: 52px; height: 52px;
+        background: var(--ice);
+        color: var(--blue);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .servicios-section { background: var(--gray-100); }
+
+    .servicio-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0.7rem 1rem;
+        background: var(--white);
+        border-radius: 8px;
+        border: 1px solid var(--gray-200);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        transition: border-color 0.2s;
+    }
+
+    .servicio-item:hover { border-color: var(--blue); }
+    .servicio-item i { color: var(--blue); font-size: 1rem; }
+
+    .cta-section {
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+        color: var(--white);
+        padding: 3.5rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <span class="hero-badge">🌡️ Plataforma de gestión</span>
+                <h1 class="hero-title">
+                    Agenda tu servicio<br>de refrigeración<br>
+                    <span style="color: var(--sky);">de forma fácil</span>
+                </h1>
+                <p class="hero-sub mt-3">
+                    Somos expertos en instalación, mantenimiento y reparación de sistemas de refrigeración.
+                    Agenda tu cita en minutos y recibe atención profesional.
+                </p>
+                <div class="mt-4 d-flex gap-3 flex-wrap">
+                    <a href="{{ url_for('registro') }}" class="btn btn-wilber btn-lg">
+                        <i class="bi bi-building-add me-2"></i>Registrar empresa
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg" style="border-radius:10px; font-weight:600;">
+                        <i class="bi bi-person-lock me-2"></i>Iniciar sesión
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-flex justify-content-center mt-4 mt-lg-0">
+                <div style="font-size:10rem; opacity:0.9; filter: drop-shadow(0 8px 32px rgba(26,111,181,0.4));">🧊</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="font-head fw-800" style="font-weight:800; font-size:1.8rem;">¿Cómo funciona?</h2>
+            <p class="text-muted">Gestiona tus servicios en tres pasos simples</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <h5 class="font-head fw-bold">1. Regístra tu empresa</h5>
+                    <p class="text-muted small mb-0">
+                        Crea tu cuenta con los datos de tu empresa y accede al sistema de forma segura.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h5 class="font-head fw-bold">2. Agenda una cita</h5>
+                    <p class="text-muted small mb-0">
+                        Selecciona la fecha, hora y tipo de servicio que necesitas. Recibiremos tu solicitud al instante.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h5 class="font-head fw-bold">3. Confirmación</h5>
+                    <p class="text-muted small mb-0">
+                        Wilber revisará tu solicitud y confirmará la cita. Podrás ver el estado desde tu panel.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Servicios -->
+<section class="servicios-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5 mb-4 mb-lg-0">
+                <h2 class="font-head fw-bold" style="font-size:1.7rem;">Nuestros servicios</h2>
+                <p class="text-muted">Ofrecemos soluciones completas para todo tipo de equipos de refrigeración industrial y comercial.</p>
+                <a href="{{ url_for('registro') }}" class="btn btn-primary mt-2">
+                    <i class="bi bi-calendar-plus me-2"></i>Agendar ahora
+                </a>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-2">
+                    {% set svcs = [
+                        ('🔧','Instalación de equipo nuevo'),
+                        ('🛠️','Mantenimiento preventivo'),
+                        ('⚙️','Reparación de compresor'),
+                        ('❄️','Reparación de evaporador'),
+                        ('🌡️','Recarga de gas refrigerante'),
+                        ('⚡','Revisión eléctrica'),
+                        ('🔍','Diagnóstico general'),
+                        ('📋','Reparación de condensador'),
+                    ] %}
+                    {% for icon, name in svcs %}
+                    <div class="col-sm-6">
+                        <div class="servicio-item">
+                            <span>{{ icon }}</span> {{ name }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container text-center">
+        <h2 class="font-head fw-800 mb-2" style="font-weight:800;">¿Listo para agendar?</h2>
+        <p class="mb-4" style="color: rgba(255,255,255,0.8); font-size:1rem;">
+            Únete a las empresas que confían en Refrigeraciones Wilber para sus equipos de refrigeración.
+        </p>
+        <a href="{{ url_for('registro') }}" class="btn btn-light btn-lg fw-bold" style="border-radius:10px; color: var(--blue);">
+            <i class="bi bi-arrow-right-circle me-2"></i>Comenzar ahora — es gratis
+        </a>
+    </div>
+</section>
+{% endblock %}

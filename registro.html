@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Registrarse – Refrigeraciones Wilber{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-wrapper {
+        min-height: calc(100vh - 130px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        background: linear-gradient(135deg, var(--frost) 0%, var(--ice) 100%);
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 480px;
+        background: var(--white);
+        border-radius: 18px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+
+    .auth-header {
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+        padding: 2.2rem 2rem;
+        text-align: center;
+        color: var(--white);
+    }
+
+    .auth-header .auth-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; display:block; }
+    .auth-header h2 { font-size: 1.4rem; font-weight: 800; margin: 0; }
+    .auth-header p  { font-size: 0.82rem; color: var(--sky); margin: 0.3rem 0 0; }
+    .auth-body { padding: 2rem; }
+    .btn-block { width: 100%; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <span class="auth-emoji">🏢</span>
+            <h2>Registrar empresa</h2>
+            <p>Crea tu cuenta y empieza a agendar servicios</p>
+        </div>
+        <div class="auth-body">
+            <form method="POST" action="{{ url_for('registro') }}" novalidate>
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre de la empresa</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-building"></i></span>
+                        <input
+                            type="text"
+                            name="nombre"
+                            class="form-control"
+                            placeholder="Ej: Distribuidora Frío Total"
+                            value="{{ nombre or '' }}"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre del contacto</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input
+                            type="text"
+                            name="contacto"
+                            class="form-control"
+                            placeholder="Ej: Juan Pérez"
+                            value="{{ contacto or '' }}"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Correo electrónico</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="empresa@correo.com"
+                            value="{{ email or '' }}"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <label class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input
+                                type="password"
+                                name="contrasena"
+                                class="form-control"
+                                placeholder="Min. 6 caracteres"
+                                required
+                            >
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Confirmar contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input
+                                type="password"
+                                name="confirmar"
+                                class="form-control"
+                                placeholder="Repite la clave"
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-wilber btn-block">
+                    <i class="bi bi-check-circle me-2"></i>Crear cuenta
+                </button>
+
+                <p class="text-center mt-3 mb-0" style="font-size:0.85rem; color:var(--gray-500);">
+                    ¿Ya tienes cuenta?
+                    <a href="{{ url_for('login') }}" class="text-blue fw-semibold">Inicia sesión</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
